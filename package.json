@@ -1,0 +1,12 @@
+{
+  "name": "nodeflow-frontend",
+  "version": "1.0.0",
+  "description": "NodeFlow frontend static site generation",
+  "main": "index.html",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "type": "module",
+  "author": "Deekshith",
+  "license": "ISC"
+}

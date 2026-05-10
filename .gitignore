@@ -1,0 +1,8 @@
+node_modules/
+.DS_Store
+.env
+
+# Locally generated build files (should not be versioned, they are generated fresh by Cloudflare Pages)
+blog/
+sitemap.xml
+robots.txt
