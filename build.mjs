@@ -48,6 +48,7 @@ async function build() {
     }`);
 
     const recommended = posts.slice(0, 3);
+    const announcements = await sanityFetch('*[_type == "announcement" && isActive == true]');
 
     const blogDir = path.join(process.cwd(), 'blog');
     if (!fs.existsSync(blogDir)) fs.mkdirSync(blogDir);
@@ -72,7 +73,7 @@ async function build() {
         };
 
         const imageUrl = sanityImageUrl(post.thumbnail);
-        const html = generateStaticHtml(postData, seoData, imageUrl, post.workflowUrl, recommended);
+        const html = generateStaticHtml(postData, seoData, imageUrl, post.workflowUrl, recommended, 'https://nodeflow.ai', announcements);
 
         fs.writeFileSync(path.join(postDir, 'index.html'), html);
         console.log(`Generated /blog/${post.slug}/index.html`);

@@ -168,18 +168,6 @@
 
         // ── Posts (populated from Sanity CMS) ──
         let posts = [];
-
-        
-
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            window.scrollTo(0, 0);
-        }
-
-        function clearHomeSearch(refocus = true) {
-            const input = document.getElementById('home-search-input');
-            const resultsPanel = document.getElementById('home-search-results');
             const clearBtn = document.getElementById('search-clear-x');
             input.value = '';
             resultsPanel.style.display = 'none';
@@ -407,34 +395,20 @@
         }
 
         // ── Announcement Bar ──────────────────────────────────────────────────
-        const announcements = [{
-            icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>`,
-            text: 'NodeFlow v2 is live — explore 50+ new n8n workflow templates'
-        }, {
-            icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>`,
-            text: 'New blog post: Complete Guide to AI Agents with n8n in 2025'
-        }, {
-            icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>`,
-            text: 'Most popular this week: RAG chatbot over Google Drive — 2.1K downloads'
-        }, {
-            icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>`,
-            text: 'New workflows added daily — bookmark nodeflow.ai and never miss a drop'
-        }, ];
-
+        let announcements = [];
         let announceIdx = 0;
         let announceTimer = null;
         let isAnnouncing = false;
 
         function cycleAnnouncement() {
-            if (isAnnouncing) return;
+            if (isAnnouncing || announcements.length === 0) return;
             isAnnouncing = true;
             const el = document.getElementById('announce-text');
             if (!el) return;
             el.style.opacity = '0';
             setTimeout(() => {
                 announceIdx = (announceIdx + 1) % announcements.length;
-                el.innerHTML = announcements[announceIdx].icon + ' <span>' + announcements[announceIdx]
-                    .text + '</span>';
+                el.innerHTML = announcements[announceIdx].icon + ' <span>' + announcements[announceIdx].text + '</span>';
                 el.style.opacity = '1';
                 isAnnouncing = false;
             }, 400);
@@ -442,12 +416,55 @@
 
         function startAnnounceTimer() {
             if (announceTimer) clearInterval(announceTimer);
-            announceTimer = setInterval(cycleAnnouncement, 4500);
+            if (announcements.length > 1) {
+                announceTimer = setInterval(cycleAnnouncement, 4500);
+            }
         }
 
-        // Set initial announcement
-        document.getElementById('announce-text').innerHTML = announcements[0].icon + ' <span>' + announcements[0]
-            .text + '</span>';
+        // Real-time Notifications Builder
+        function buildNotifications() {
+            const notifList = document.querySelector('.notif-list');
+            const notifDot = document.querySelector('.notif-dot');
+            if (!notifList) return;
+            
+            notifList.innerHTML = '';
+            
+            const now = Date.now();
+            const oneDayMs = 24 * 60 * 60 * 1000;
+            
+            const recentPosts = posts.filter(p => {
+                const postDate = new Date(p.date).getTime();
+                return (now - postDate) <= oneDayMs;
+            });
+            
+            if (recentPosts.length === 0) {
+                notifList.innerHTML = '<div style="padding: 24px; text-align: center; color: var(--ink4); font-size: 13px;">No new notifications</div>';
+                if (notifDot) notifDot.style.display = 'none';
+                return;
+            }
+            
+            if (notifDot) notifDot.style.display = 'block';
+
+            recentPosts.slice(0, 5).forEach(post => {
+                const diff = Math.floor((now - new Date(post.date).getTime()) / 3600000);
+                const timeText = diff <= 0 ? 'Just now' : diff + ' hours ago';
+                
+                const notifHTML = `
+                <a href="/blog/${post.slug}" class="notif-item unread" style="text-decoration: none; color: inherit; display: flex;">
+                    <div class="notif-icon workflow">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                        </svg>
+                    </div>
+                    <div class="notif-text">
+                        <p><strong>New post published:</strong> ${post.title}</p>
+                        <time>${timeText}</time>
+                    </div>
+                    <div class="notif-unread-dot"></div>
+                </a>`;
+                notifList.insertAdjacentHTML('beforeend', notifHTML);
+            });
+        }
 
         // ── Search toggle ─────────────────────────────────────────────────────
         function toggleHomeSearch() {
@@ -501,6 +518,23 @@
                 } else {
                     console.log('[Sanity] No posts found');
                 }
+                
+                // Fetch dynamic announcements
+                const sanityAnnouncements = await sanityFetch('*[_type == "announcement" && isActive == true]');
+                if (sanityAnnouncements && sanityAnnouncements.length > 0) {
+                    const megaphoneIcon = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>`;
+                    announcements = sanityAnnouncements.map(a => ({
+                        icon: megaphoneIcon,
+                        text: a.text
+                    }));
+                } else {
+                    document.getElementById('announce-bar').style.display = 'none';
+                }
+                
+                if (announcements.length > 0) {
+                    document.getElementById('announce-text').innerHTML = announcements[0].icon + ' <span>' + announcements[0].text + '</span>';
+                }
+
             } catch (e) {
                 console.warn('[Sanity] Init error:', e.message);
             }
@@ -508,6 +542,7 @@
             if (blogSection) blogSection.classList.remove('loading');
             buildBlogCarousel();
             buildRecentArticles();
+            buildNotifications();
             initBlogCarouselTouch();
             startAnnounceTimer();
 

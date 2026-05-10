@@ -63,7 +63,7 @@ function relativeTime(isoDate) {
   return formatSanityDate(isoDate);
 }
 
-export function generateStaticHtml(postData, seoData, imageUrl, workflowUrl, recommendedPosts = [], siteUrl = 'https://nodeflow.ai') {
+export function generateStaticHtml(postData, seoData, imageUrl, workflowUrl, recommendedPosts = [], siteUrl = 'https://nodeflow.ai', announcements = []) {
   const schemaLd = {
     "@context": "https://schema.org",
     "@type": "BlogPosting",
@@ -295,7 +295,6 @@ export function generateStaticHtml(postData, seoData, imageUrl, workflowUrl, rec
                 </button>
               </div>
 
-              ${workflowUrl ? `<a href="${workflowUrl}?dl=workflow.json" class="wf-btn wf-btn-primary" style="display:inline-flex; align-items:center; gap:8px; margin-top: 20px; padding: 12px 24px; background: var(--green); color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; border: 1px solid var(--green); transition: opacity 0.2s;"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download n8n Workflow</a>` : ''}
               
               <div class="blog-hero-wrap">
                   <img class="blog-hero-img" src="${imageUrl}" alt="${escapeHtml(postData.title)}">
@@ -324,6 +323,14 @@ export function generateStaticHtml(postData, seoData, imageUrl, workflowUrl, rec
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                 <span>Advertisement</span>
               </div>
+              ${workflowUrl ? `
+              <div style="background: #fff; border-radius: var(--card-radius); padding: 24px; margin-top: 18px; text-align: center; border: 1px solid var(--border);">
+                  <h3 style="margin-top: 0; margin-bottom: 12px; font-size: 16px; color: var(--ink);">Get this workflow</h3>
+                  <p style="font-size: 13px; color: var(--ink3); margin-bottom: 20px;">Download the JSON file to instantly import this automation into your n8n instance.</p>
+                  <a href="${workflowUrl}?dl=workflow.json" class="wf-btn wf-btn-primary" style="display:inline-flex; width: 100%; justify-content: center; align-items:center; gap:8px; padding: 12px 24px; background: var(--green); color: #fff; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 14px; border: 1px solid var(--green); transition: opacity 0.2s;">
+                      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download JSON
+                  </a>
+              </div>` : ''}
               ${recommendHTML}
             </div>
         </div>
@@ -331,21 +338,47 @@ export function generateStaticHtml(postData, seoData, imageUrl, workflowUrl, rec
 
     <!-- Footer -->
     <footer class="global-footer">
-        <div class="footer-inner">
+    <div class="footer-inner">
+        <div class="footer-brand">
             <div class="footer-logo">node<span>flow</span></div>
-            <p class="footer-desc">The ultimate library for n8n workflows and automations.</p>
-            <div class="footer-links">
-                <a href="/">Home</a>
-                <a href="#">About</a>
-                <a href="#">Submit a Workflow</a>
-                <a href="#">Terms</a>
-                <a href="#">Privacy</a>
+            <p class="footer-desc">The ultimate library for n8n workflows and automations. Discover, share, and automate.</p>
+        </div>
+        
+        <div class="footer-nav-grid">
+            <div class="footer-nav-col">
+                <h4>Navigation</h4>
+                <nav aria-label="Footer Navigation">
+                    <a href="/">Home</a>
+                    <a href="/#blog">Blog</a>
+                    <a href="#">Submit a Workflow</a>
+                </nav>
             </div>
+            <div class="footer-nav-col">
+                <h4>Legal</h4>
+                <nav aria-label="Footer Legal">
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Contact</a>
+                </nav>
+            </div>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <div class="footer-bottom-inner">
             <div class="footer-copyright">
                 &copy; ${new Date().getFullYear()} NodeFlow.ai. All rights reserved.
             </div>
+            <div class="footer-socials">
+                <a href="#" aria-label="Twitter">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
+                </a>
+                <a href="#" aria-label="GitHub">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+                </a>
+            </div>
         </div>
-    </footer>
+    </div>
+</footer>
 </div>
 
 <script>
@@ -365,12 +398,14 @@ export function generateStaticHtml(postData, seoData, imageUrl, workflowUrl, rec
     }
 
     // Announcement Bar
-    const announcements = [
-        { icon: \`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>\`, text: 'NodeFlow v2 is live — explore 50+ new n8n workflow templates' },
-        { icon: \`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>\`, text: 'New blog post: Complete Guide to AI Agents with n8n in 2025' },
-        { icon: \`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>\`, text: 'Most popular this week: RAG chatbot over Google Drive — 2.1K downloads' },
-        { icon: \`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>\`, text: 'New workflows added daily — bookmark nodeflow.ai and never miss a drop' },
-    ];
+    const megaphoneIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg>';
+    const rawAnnouncements = ${JSON.stringify(announcements || [])};
+    const mappedAnnouncements = rawAnnouncements.map(a => ({ icon: megaphoneIcon, text: a.text }));
+    
+    if (mappedAnnouncements.length === 0) {
+        const bar = document.getElementById('announce-bar');
+        if (bar) bar.style.display = 'none';
+    }
     let announceIdx = 0;
     let isAnnouncing = false;
 
@@ -381,8 +416,8 @@ export function generateStaticHtml(postData, seoData, imageUrl, workflowUrl, rec
         if (!el) return;
         el.style.opacity = '0';
         setTimeout(() => {
-            announceIdx = (announceIdx + 1) % announcements.length;
-            el.innerHTML = announcements[announceIdx].icon + ' <span>' + announcements[announceIdx].text + '</span>';
+            announceIdx = (announceIdx + 1) % mappedAnnouncements.length;
+            el.innerHTML = mappedAnnouncements[announceIdx].icon + ' <span>' + mappedAnnouncements[announceIdx].text + '</span>';
             el.style.opacity = '1';
             isAnnouncing = false;
         }, 400);
@@ -390,9 +425,11 @@ export function generateStaticHtml(postData, seoData, imageUrl, workflowUrl, rec
 
     (function initAnnounce() {
         const el = document.getElementById('announce-text');
-        if (el) {
-            el.innerHTML = announcements[0].icon + ' <span>' + announcements[0].text + '</span>';
-            setInterval(cycleAnnouncement, 4500);
+        if (el && mappedAnnouncements.length > 0) {
+            el.innerHTML = mappedAnnouncements[0].icon + ' <span>' + mappedAnnouncements[0].text + '</span>';
+            if (mappedAnnouncements.length > 1) {
+                setInterval(cycleAnnouncement, 4500);
+            }
         }
     })();
 </script>
