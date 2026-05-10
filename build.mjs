@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { generateStaticHtml } from '../n8n-content-worker/src/template.js';
+import { generateStaticHtml } from './template.js';
 
 const SANITY_PROJECT_ID = 'si810ffl';
 const SANITY_DATASET = 'posts-1';
