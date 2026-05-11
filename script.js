@@ -168,6 +168,10 @@
 
         // ── Posts (populated from Sanity CMS) ──
         let posts = [];
+
+        function clearHomeSearch(refocus = true) {
+            const input = document.getElementById('home-search-input');
+            const resultsPanel = document.getElementById('home-search-results');
             const clearBtn = document.getElementById('search-clear-x');
             input.value = '';
             resultsPanel.style.display = 'none';
